@@ -1,0 +1,133 @@
+{
+  "type": "wall_post_new",
+  "object": {
+    "id": 3232,
+    "from_id": -152205508,
+    "owner_id": -152205508,
+    "date": 1566821702,
+    "marked_as_ads": 0,
+    "post_type": "post",
+    "text": "Продам вещи",
+    "signer_id": 280513739,
+    "can_edit": 1,
+    "created_by": 235026671,
+    "can_delete": 1,
+    "attachments": [
+      {
+        "type": "photo",
+        "photo": {
+          "id": 457242404,
+          "album_id": -7,
+          "owner_id": -152205508,
+          "user_id": 100,
+          "sizes": [
+            {
+              "type": "m",
+              "url": "https:\/\/sun9-7.userapi.com\/c850536\/v850536336\/19b863\/MuwtzjizIBo.jpg",
+              "width": 130,
+              "height": 130
+            },
+            {
+              "type": "o",
+              "url": "https:\/\/sun9-11.userapi.com\/c850536\/v850536336\/19b867\/UX0VyBGt7UA.jpg",
+              "width": 130,
+              "height": 130
+            },
+            {
+              "type": "p",
+              "url": "https:\/\/sun9-13.userapi.com\/c850536\/v850536336\/19b868\/XhtKpX7p5eo.jpg",
+              "width": 200,
+              "height": 200
+            },
+            {
+              "type": "q",
+              "url": "https:\/\/sun9-3.userapi.com\/c850536\/v850536336\/19b869\/vW9ik-ayAqc.jpg",
+              "width": 320,
+              "height": 320
+            },
+            {
+              "type": "r",
+              "url": "https:\/\/sun9-41.userapi.com\/c850536\/v850536336\/19b86a\/VPpgq8cWZhs.jpg",
+              "width": 510,
+              "height": 510
+            },
+            {
+              "type": "s",
+              "url": "https:\/\/sun9-49.userapi.com\/c850536\/v850536336\/19b862\/m9HZ-FJAdQg.jpg",
+              "width": 75,
+              "height": 75
+            },
+            {
+              "type": "x",
+              "url": "https:\/\/sun9-29.userapi.com\/c850536\/v850536336\/19b864\/BzESfPJId6k.jpg",
+              "width": 604,
+              "height": 604
+            },
+            {
+              "type": "y",
+              "url": "https:\/\/sun9-22.userapi.com\/c850536\/v850536336\/19b865\/TrxDv3pGO1c.jpg",
+              "width": 807,
+              "height": 807
+            },
+            {
+              "type": "z",
+              "url": "https:\/\/sun9-14.userapi.com\/c850536\/v850536336\/19b866\/FzL-xAcjflg.jpg",
+              "width": 1024,
+              "height": 1024
+            }
+          ],
+          "text": "",
+          "date": 1566820099,
+          "post_id": 3231,
+          "access_key": "3ea6eb661e9f1d1f18"
+        }
+      },
+      {
+        "type": "poll",
+        "poll": {
+          "id": 344862821,
+          "owner_id": -152205508,
+          "created": 1566821702,
+          "question": "Оцените объявление",
+          "votes": 0,
+          "answers": [
+            {
+              "id": 1157273898,
+              "text": "Все хорошо",
+              "votes": 0,
+              "rate": 0.000000
+            },
+            {
+              "id": 1157273899,
+              "text": "Реклама",
+              "votes": 0,
+              "rate": 0.000000
+            },
+            {
+              "id": 1157273900,
+              "text": "Спам",
+              "votes": 0,
+              "rate": 0.000000
+            }
+          ],
+          "anonymous": true,
+          "multiple": false,
+          "answer_ids": [],
+          "end_date": 0,
+          "closed": false,
+          "is_board": false,
+          "can_edit": true,
+          "can_vote": true,
+          "can_report": false,
+          "can_share": true,
+          "author_id": -152205508
+        }
+      }
+    ],
+    "comments": {
+      "count": 0
+    },
+    "is_favorite": false
+  },
+  "group_id": 152205508
+}

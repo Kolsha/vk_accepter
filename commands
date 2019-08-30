@@ -1,0 +1,52 @@
+php artisan make:model Group -m
+
+php artisan migrate
+
+
+php artisan make:observer GroupObserver --model=Group
+
+
+php artisan queue:table
+
+php artisan queue:failed-table
+
+php artisan migrate
+
+
+php artisan make:model Post -m
+
+
+php artisan make:controller VKCallBackController --invokable
+
+
+php artisan make:job ProcessSuggestedPost
+
+composer dump-autoload
+
+
+php artisan make:job ProcessPublishedPost
+
+
+
+php artisan make:job PostComment
+
+php artisan make:job PollAddVote
+
+php artisan queue:work
+
+php artisan queue:failed
+
+php artisan queue:flush
+
+
+php artisan make:job ProcessUserJoined
+
+
+/*
+
+
+create database vk_accepter;
+
+create user vk_accepter with encrypted password 'j8EMziK7NyQF9aN';
+
+grant all privileges on database vk_accepter to vk_accepter;
