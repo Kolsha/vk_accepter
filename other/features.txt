@@ -1,4 +1,4 @@
 local copy of subscribers
 join/leave event
-periodic scan old post
+periodic scan old post and delete
 

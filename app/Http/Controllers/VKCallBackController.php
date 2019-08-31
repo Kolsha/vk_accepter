@@ -56,24 +56,23 @@ class VKCallBackController extends Controller
                 $post = Post::updateOrCreate(
                     ['group_id' => $event->group_id, 'post_id' => $event->object->id],
                     [
-//                        'post_type' => $post_type,
+                        'post_type' => $post_type,
                         'object' => json_encode($event->object)
                     ]
                 );
-                if ($post->post_type != $post_type) {
-
-
-                    return response('not ok'); // TODO
-                }
+//                if ($post->post_type != $post_type) {
+//
+//                    return response('not ok'); // TODO
+//                }
 
                 switch ($post_type) {
                     case 'suggested':
 
-                        ProcessSuggestedPost::dispatchNow($post); // TODO:
+                        ProcessSuggestedPost::dispatch($post); // TODO:
                         break;
                     case 'to_update':
 
-                        ProcessPublishedPost::dispatchNow($post); // TODO:
+                        ProcessPublishedPost::dispatch($post); // TODO:
                         break;
                     default:
                         break;
@@ -84,7 +83,7 @@ class VKCallBackController extends Controller
 
 
             case 'group_join':
-                ProcessUserJoined::dispatchNow($event->object->user_id);//todo
+                ProcessUserJoined::dispatch($event->object->user_id);//todo
                 break;
 
             default:

@@ -109,3 +109,7 @@ modules.xml
 .idea/sonarlint
 
 # End of https://www.gitignore.io/api/laravel,phpstorm+all
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

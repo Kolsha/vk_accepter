@@ -61,28 +61,6 @@ class ProcessPublishedPost implements ShouldQueue
         $access_token = $this->group->vk_user_access_token;
 
 
-        $code = user_is_member_code(
-            $pobj->signer_id, // TODO suggest from_id, posted : signer_id
-            $this->group->vk_group_id
-        );
-
-
-        /** @var array $exec_res
-         * user => array (
-         *      id,
-         *      first_name,
-         *      last_name,
-         *      ?deactivated
-         * ),
-         * is_member => [0,1]
-         * )
-         */
-        $exec_res = $vk->getRequest()->post('execute', $access_token,
-            [
-                'code' => $code
-            ]);
-
-
         $post_request = array(
             'owner_id' => '-' . $this->group->vk_group_id,
             'message' => $pobj->text,
@@ -97,44 +75,45 @@ class ProcessPublishedPost implements ShouldQueue
         $photos = array();
         $urls = array();
 
-        $post_watermark_filename = $this->group->post_watermark_filename;
+        $post_watermark_filename = public_path('watermarks/' . $this->group->post_watermark_filename);
         $need_update_photos = $this->group->post_flag_watermark &&
             file_exists($post_watermark_filename);
 
 
 //        dd($need_update_photos);
+        if (isset($pobj->attachments)) {
+            foreach ($pobj->attachments as $att) {
+                switch ($att->type) {
+                    case 'link':
+                        $url = $att->link->url;
+                        break;
+                    default:
 
-        foreach ($pobj->attachments as $att) {
-            switch ($att->type) {
-                case 'link':
-                    $url = $att->link->url;
-                    break;
-                default:
+                        $has_poll = $has_poll || ($att->type == 'poll');
 
-                    $has_poll = $has_poll || ($att->type == 'poll');
-
-                    $att_string = $att->type . $att->{$att->type}->owner_id . '_' . $att->{$att->type}->id;
+                        $att_string = $att->type . $att->{$att->type}->owner_id . '_' . $att->{$att->type}->id;
 
 
-                    if (isset($att->{$att->type}->access_key)) {
-                        $att_string .= '_' . $att->{$att->type}->access_key;
-                    }
-
-                    if ($need_update_photos) {
-
-                        $photo_url = get_photo_url($att->photo);
-                        if (!empty($photo_url)) {
-                            $photos[] = [
-                                'url' => $photo_url,
-                                'text' => $att->photo->text,
-                                'att' => $att_string
-                            ];
-
-                            continue;
+                        if (isset($att->{$att->type}->access_key)) {
+                            $att_string .= '_' . $att->{$att->type}->access_key;
                         }
-                    }
 
-                    $post_request['attachments'][] = $att_string;
+                        if ($need_update_photos) {
+
+                            $photo_url = get_photo_url($att->photo);
+                            if (!empty($photo_url)) {
+                                $photos[] = [
+                                    'url' => $photo_url,
+                                    'text' => $att->photo->text,
+                                    'att' => $att_string
+                                ];
+
+                                continue;
+                            }
+                        }
+
+                        $post_request['attachments'][] = $att_string;
+                }
             }
         }
 
@@ -259,7 +238,10 @@ class ProcessPublishedPost implements ShouldQueue
 
         if ($need_comment) {
 
-            $comment_text = replace_user_mention($this->group->comment_text_mask, $exec_res['user']);
+            $user = $vk->users()->get($access_token, ['user_ids' => $pobj->signer_id]);
+            $user = $user[array_key_first($user)];
+
+            $comment_text = replace_user_mention($this->group->comment_text_mask, $user);
 
             PostComment::dispatch(
                 [

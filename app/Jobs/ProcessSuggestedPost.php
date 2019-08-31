@@ -151,6 +151,9 @@ class ProcessSuggestedPost implements ShouldQueue
                 $pobj->text,
                 $anon_res) != false) {
             $post_request['signed'] = ($anon_res[0] == __('anon.true_option')) ? 0 : 1;
+
+            $post_request['message'] = str_replace($anon_res[0], '', $post_request['message']);
+
         }
 
 
