@@ -23,7 +23,6 @@ class VKCallBackController extends Controller
      */
     public function __invoke(Request $request)
     {
-//        dd($request);
         $event = json_decode($request->getContent());
         if (empty($event)) {
             throw new BadRequestHttpException('empty event');
@@ -60,19 +59,16 @@ class VKCallBackController extends Controller
                         'object' => json_encode($event->object)
                     ]
                 );
-//                if ($post->post_type != $post_type) {
-//
-//                    return response('not ok'); // TODO
-//                }
+
 
                 switch ($post_type) {
                     case 'suggested':
 
-                        ProcessSuggestedPost::dispatch($post); // TODO:
+                        ProcessSuggestedPost::dispatch($post);
                         break;
                     case 'to_update':
 
-                        ProcessPublishedPost::dispatch($post); // TODO:
+                        ProcessPublishedPost::dispatch($post);
                         break;
                     default:
                         break;
@@ -83,7 +79,7 @@ class VKCallBackController extends Controller
 
 
             case 'group_join':
-                ProcessUserJoined::dispatch($event->object->user_id);//todo
+                ProcessUserJoined::dispatch($event->object->user_id, $event->group_id);
                 break;
 
             default:

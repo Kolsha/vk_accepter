@@ -14,3 +14,14 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::group(['middleware' => 'signed'], function () {
+
+    Route::get('post/{group_id}/{post_id}/del', 'DeletePostController@showConfirmation')->name('post.del');
+
+    Route::post('post/{group_id}/{post_id}/del', 'DeletePostController@confirmed');
+
+
+});
+

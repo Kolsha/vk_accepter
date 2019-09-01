@@ -2,3 +2,5 @@ local copy of subscribers
 join/leave event
 periodic scan old post and delete
 
+link to delete
+

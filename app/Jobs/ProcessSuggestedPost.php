@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Group;
 use App\Post;
 
 use Illuminate\Bus\Queueable;
@@ -58,7 +57,7 @@ class ProcessSuggestedPost implements ShouldQueue
         $this->post->user_id = $pobj->from_id;
 
         $code = user_is_member_code(
-            $pobj->from_id, // TODO suggest from_id, posted : signer_id
+            $pobj->from_id, // suggest: from_id, posted : signer_id
             $this->group->vk_group_id
         );
 
@@ -81,7 +80,6 @@ class ProcessSuggestedPost implements ShouldQueue
         if (!$this->group->allow_with_empty_text &&
             empty($pobj->text)) {
 
-            // TODO: notification job
             $this->markToDelete();
             return;
         }

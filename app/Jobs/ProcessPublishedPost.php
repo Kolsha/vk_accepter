@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\URL;
 use Intervention\Image\Facades\Image;
 use VK\TransportClient\Curl\CurlHttpClient;
 
@@ -21,8 +22,8 @@ class ProcessPublishedPost implements ShouldQueue
     private $group;
 
 
-    private const NEXT_TASK_DELAY_MIN = 15;
-    private const NEXT_TASK_DELAY_MAX = 60;
+    private const NEXT_TASK_DELAY_MIN = 10;
+    private const NEXT_TASK_DELAY_MAX = 30;
 
     /**
      * The number of times the job may be attempted.
@@ -65,10 +66,15 @@ class ProcessPublishedPost implements ShouldQueue
             'owner_id' => '-' . $this->group->vk_group_id,
             'message' => $pobj->text,
             'attachments' => array(),
-            'signed' => ((isset($pobj->signer_id)) ? 1 : 0),
+            'signed' => 0,
             'post_id' => $pobj->id,
 
         );
+
+        if (isset($pobj->signer_id)) {
+            $this->post->user_id = $pobj->signer_id;
+            $post_request['signed'] = 1;
+        }
 
         $has_poll = false;
         $url = null;
@@ -80,7 +86,6 @@ class ProcessPublishedPost implements ShouldQueue
             file_exists($post_watermark_filename);
 
 
-//        dd($need_update_photos);
         if (isset($pobj->attachments)) {
             foreach ($pobj->attachments as $att) {
                 switch ($att->type) {
@@ -98,7 +103,7 @@ class ProcessPublishedPost implements ShouldQueue
                             $att_string .= '_' . $att->{$att->type}->access_key;
                         }
 
-                        if ($need_update_photos) {
+                        if ($need_update_photos && $att->type == 'photo') {
 
                             $photo_url = get_photo_url($att->photo);
                             if (!empty($photo_url)) {
@@ -266,6 +271,30 @@ class ProcessPublishedPost implements ShouldQueue
             PollAddVote::dispatch($poll_req)
                 ->delay(now()->addSeconds(rand(self::NEXT_TASK_DELAY_MIN, self::NEXT_TASK_DELAY_MAX)));
 
+        }
+
+        $need_send_del_link = $this->group->use_delete_link &&
+            !empty($this->post->user_id);
+
+        if ($need_send_del_link) {
+
+            $del_link = Url::signedRoute('post.del',
+                [
+                    'group_id' => $this->group->vk_group_id,
+                    'post_id' => $this->post->post_id
+                ]
+            );
+
+            $attachment = $del_link . ',wall-' . $this->group->vk_group_id . '_' . $this->post->post_id;
+
+            SendMessageFromGroup::dispatch([
+                'access_token' => $access_token,
+                'user_id' => $this->post->user_id,
+                'group_id' => $this->group->vk_group_id,
+                'message' => __('notification.del_link_usage'),
+                'attachment' => $attachment,
+                'random_id' => $this->post->post_id
+            ]);
         }
 
 

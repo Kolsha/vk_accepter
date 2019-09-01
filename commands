@@ -42,6 +42,15 @@ php artisan queue:flush
 php artisan make:job ProcessUserJoined
 
 
+
+php artisan make:job SendMessageFromGroup
+
+php artisan make:job DeletePost
+
+
+php artisan make:controller DeletePostController
+
+
 /*
 
 

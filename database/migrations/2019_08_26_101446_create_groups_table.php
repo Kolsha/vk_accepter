@@ -37,14 +37,6 @@ class CreateGroupsTable extends Migration
             $table->boolean('post_flag_poll')->default(true);
 
 
-//            $table->set('post_flags', [
-//                'del_url',
-//                'upd_url',
-//                'watermark',
-//                'add_text',
-//                'comment'
-//            ])->default(['del_url', 'watermark', 'comment']);
-
             $table->text('post_add_text')->default('');
             $table->text('comment_text_mask')->default('');
             $table->text('update_url_mask')->default('');
@@ -53,24 +45,9 @@ class CreateGroupsTable extends Migration
             $table->text('post_ban_keys')->default('');
 
 
-//            $table->set('allow', [
-//                'from_not_alive',
-//                'from_not_member',
-//                'empty_text'
-//            ])->default([]);
-
-
             $table->boolean('allow_from_not_alive')->default(false);
             $table->boolean('allow_from_not_member')->default(false);
             $table->boolean('allow_with_empty_text')->default(false);
-
-
-//            $table->unsignedBigInteger('user_id');
-//
-//            $table->foreign('user_id')
-//                ->references('id')
-//                ->on('users')
-//                ->onDelete('cascade');
 
 
             $table->unsignedBigInteger('delete_timeout_sec')->default(60 * 60 * 24 * 2);
@@ -78,6 +55,8 @@ class CreateGroupsTable extends Migration
 
             $table->boolean('use_notification')->default(false);
             $table->unsignedBigInteger('notification_topic')->default(0);
+
+            $table->boolean('use_delete_link')->default(false);
 
 
             $table->boolean('enabled')->default(true);

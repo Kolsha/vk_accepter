@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static updateOrCreate(array $array, array $array1)
  * @property string post_type
  * @property \App\Group group
+ * @property  int|null user_id
+ * @property \stdClass object
+ * @property int post_id
  */
 class Post extends Model
 {

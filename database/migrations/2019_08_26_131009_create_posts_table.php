@@ -33,7 +33,8 @@ class CreatePostsTable extends Migration
                 'suggested',
                 'to_update',
                 'updated',
-                'to_delete'
+                'to_delete',
+                'deleted'
             ])->default('suggested');
 
             $table->json('object')->nullable();
