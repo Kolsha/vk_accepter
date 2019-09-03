@@ -26,6 +26,13 @@ class ProcessPublishedPost implements ShouldQueue
     private const NEXT_TASK_DELAY_MAX = 30;
 
     /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 180;
+
+    /**
      * The number of times the job may be attempted.
      *
      * @var int

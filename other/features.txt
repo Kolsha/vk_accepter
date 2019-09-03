@@ -1,6 +1,18 @@
 local copy of subscribers
 join/leave event
-periodic scan old post and delete
+
 
 link to delete
+
+periodic scan old post and delete
+
+web admin
+exclude string
+post processors
+
+
+message bot
+
+auto configure group callback
+
 
