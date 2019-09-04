@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Group;
 use App\Jobs\ProcessPublishedPost;
 use App\Jobs\ProcessUserJoined;
+use App\Jobs\ProcessUserNewMsg;
 use App\Post;
 use App\Jobs\ProcessSuggestedPost;
 
@@ -80,6 +81,10 @@ class VKCallBackController extends Controller
 
             case 'group_join':
                 ProcessUserJoined::dispatch($event->object->user_id, $event->group_id);
+                break;
+
+            case 'message_new':
+                ProcessUserNewMsg::dispatch($group, $event->object);
                 break;
 
             default:

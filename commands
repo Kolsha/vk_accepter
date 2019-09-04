@@ -51,6 +51,9 @@ php artisan make:job DeletePost
 php artisan make:controller DeletePostController
 
 
+php artisan make:job ProcessUserMsg
+
+
 /*
 
 

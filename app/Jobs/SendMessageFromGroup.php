@@ -62,6 +62,10 @@ class SendMessageFromGroup implements ShouldQueue
 
         }
 
+        if (!array_key_exists('random_id', $this->payload)) {
+            $this->payload['random_id'] = random_int(PHP_INT_MIN, PHP_INT_MAX) + now()->unix();
+        }
+
         $vk->messages()->send(
             $this->payload['access_token'],
             Arr::except($this->payload, ['access_token'])
