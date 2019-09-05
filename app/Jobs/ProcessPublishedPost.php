@@ -280,7 +280,9 @@ class ProcessPublishedPost implements ShouldQueue
 
         }
 
-        $need_send_del_link = $this->group->use_delete_link &&
+
+        // TODO: rename column and drop this
+        $need_send_del_link = false && $this->group->use_delete_link &&
             !empty($this->post->user_id);
 
         if ($need_send_del_link) {

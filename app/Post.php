@@ -54,4 +54,15 @@ class Post extends Model
     }
 
 
+    /**
+     * Get the attachment string.
+     *
+     * @return string
+     */
+    public function getAttachmentAttribute()
+    {
+        return "wall-{$this->group->vk_group_id}_{$this->post_id}";
+    }
+
+
 }

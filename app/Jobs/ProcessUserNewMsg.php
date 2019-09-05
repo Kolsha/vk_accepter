@@ -46,6 +46,7 @@ class ProcessUserNewMsg implements ShouldQueue
      */
     public function handle(\VK\Client\VKApiClient $vk)
     {
+        // TODO: check if is needed
         $this->vk = $vk;
         $command = 'show_posts';
         if (!empty($this->msg) && !empty($this->msg['payload'])) {
@@ -80,7 +81,7 @@ class ProcessUserNewMsg implements ShouldQueue
 
     private function show_posts()
     {
-        $per_line = 3;
+        $per_line = 2;
         $free_line = 3;
         $page = 0;
         if (isset($this->msg['payload']['page'])) {
@@ -94,13 +95,16 @@ class ProcessUserNewMsg implements ShouldQueue
 
 
             ]
-        )->whereIn(
+        )
+            ->whereIn(
 
 
-            'post_type', ['to_update', 'updated']
+                'post_type', ['to_update', 'updated']
 
 
-        )->simplePaginate($per_line * $free_line, ['*'], 'page', $page);
+            )
+            ->orderBy('post_id', 'desc')
+            ->simplePaginate($per_line * $free_line, ['*'], 'page', $page); // todo orderby time/id
 
         $my_posts_btn = [['cmd' => 'show_posts', 'page' => 1], 'Мои посты', 'green'];
         $first_row = [
@@ -131,7 +135,8 @@ class ProcessUserNewMsg implements ShouldQueue
             $btn = [
                 [
                     'cmd' => 'confirm_delete_post',
-                    'post_id' => $post->post_id
+                    'post_id' => $post->post_id,
+                    'page' => $posts->currentPage(),
                 ],
                 $label,
                 'white'
@@ -167,17 +172,66 @@ class ProcessUserNewMsg implements ShouldQueue
 
     private function confirm_delete_post()
     {
-        return [
+        $post = Post::where(
+            [
+                ['group_id', '=', $this->group->vk_group_id],
+                ['user_id', '=', $this->msg['from_id']],
+                ['post_id', '=', $this->msg['payload']['post_id']]
 
-            'message' => 'not impl',
+
+            ]
+        )->firstOrFail();
+
+        $yes_payload = [
+            'cmd' => 'delete_post',
+            'post_id' => $this->msg['payload']['post_id'],
+            'page' => $this->msg['payload']['page'],
         ];
+
+        $no_payload = [
+            'cmd' => 'show_posts',
+            'page' => $this->msg['payload']['page'],
+        ];
+
+        $dialog = generate_dialog('Вы действительно хотите удалить пост?', $yes_payload, $no_payload);
+
+        $dialog['attachment'] = $post->attachment;
+
+        return $dialog;
+
+
     }
 
     private function delete_post()
     {
-        return [
 
-            'message' => 'not impl',
-        ];
+        $post = Post::where(
+            [
+                ['group_id', '=', $this->group->vk_group_id],
+                ['user_id', '=', $this->msg['from_id']],
+                ['post_id', '=', $this->msg['payload']['post_id']]
+
+
+            ]
+        )->firstOrFail();
+
+
+        DeletePost::withChain([
+            new UpdatePostDBStatus($post, 'deleted')
+
+        ])
+            ->dispatch(
+                [
+                    'owner_id' => '-' . $this->group->vk_group_id,
+                    'post_id' => $post->post_id,
+                    'access_token' => $this->group->vk_user_access_token
+                ]
+            );
+
+        $answer = $this->show_posts();
+
+        $answer['message'] = 'Пост будет скоро удален!';
+
+        return $answer;
     }
 }
