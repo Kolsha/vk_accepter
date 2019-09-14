@@ -40,7 +40,7 @@ class CreatePostsTable extends Migration
             $table->json('object')->nullable();
 
 
-            $table->timestamps();
+            $table->timestampsTz();
 
             $table->unique(['group_id', 'post_id']);
         });

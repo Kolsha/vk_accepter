@@ -56,6 +56,8 @@ class CreateGroupsTable extends Migration
             $table->boolean('use_notification')->default(false);
             $table->unsignedBigInteger('notification_topic')->default(0);
 
+
+            //TODO: rename use_delete_link to use_chatbot
             $table->boolean('use_delete_link')->default(false);
 
 

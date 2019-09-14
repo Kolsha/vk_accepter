@@ -30,7 +30,7 @@ class ProcessPublishedPost implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 180;
+    public $timeout = 200;
 
     /**
      * The number of times the job may be attempted.
@@ -168,7 +168,7 @@ class ProcessPublishedPost implements ShouldQueue
 
 
         { //photos block
-            $http_client = new CurlHttpClient(10);
+            $http_client = new CurlHttpClient(5);
 
             foreach ($photos as $k => $v) {
 
@@ -194,10 +194,9 @@ class ProcessPublishedPost implements ShouldQueue
                     $img->save();
 
                     if (empty($v['text'])) {
-                        $v['text'] = $this->group->title;
+                        $v['text'] = '@club' . $this->group->vk_group_id . '(' . $v['text'] . ')';
                     }
 
-                    $v['text'] = '@club' . $this->group->vk_group_id . '(' . $v['text'] . ')';
                     $tmp_att = $this->uploadWallPhoto($vk, $this->group, $tmp_name, $v['text']);
                     if (!empty($tmp_att)) {
                         $post_request['attachments'][] = $tmp_att;
