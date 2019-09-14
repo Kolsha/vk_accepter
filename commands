@@ -1,5 +1,9 @@
 php artisan make:model Group -m
 
+php artisan make:model Post -m
+
+php artisan make:model UserRule -m
+
 php artisan migrate
 
 
@@ -13,7 +17,7 @@ php artisan queue:failed-table
 php artisan migrate
 
 
-php artisan make:model Post -m
+
 
 
 php artisan make:controller VKCallBackController --invokable
@@ -56,11 +60,4 @@ php artisan make:job ProcessUserMsg
 php artisan make:job UpdatePostStatus
 
 
-/*
 
-
-create database vk_accepter;
-
-create user vk_accepter with encrypted password 'j8EMziK7NyQF9aN';
-
-grant all privileges on database vk_accepter to vk_accepter;

@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('\VK\Client\VKApiClient', function ($app) {
-            return new \VK\Client\VKApiClient();
+            return new \VK\Client\VKApiClient('5.101');
         });
     }
 

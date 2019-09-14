@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Post;
 use App\Group;
+use App\UserRule;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -67,6 +68,13 @@ class ProcessPublishedPost implements ShouldQueue
         $this->group =& $this->post->group;
 
         $access_token = $this->group->vk_user_access_token;
+
+        $user_rules = UserRule::getFirstMatchByUserId($this->group->vk_group_id, [$pobj->signer_id, $pobj->created_by]);
+
+        if (!empty($user_rules) && empty($user_rules->process_published_posts)) {
+            // stop handle
+            return;
+        }
 
 
         $post_request = array(
