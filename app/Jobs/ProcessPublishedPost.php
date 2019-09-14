@@ -198,8 +198,11 @@ class ProcessPublishedPost implements ShouldQueue
                     )->opacity(70);
 
                     $img->insert($watermark, 'bottom-right', 5, 5);
-
                     $img->save();
+
+                    if (empty($v['text'])) {
+                        $v['text'] = $this->group->title;
+                    }
 
                     if (empty($v['text'])) {
                         $v['text'] = '@club' . $this->group->vk_group_id . '(' . $v['text'] . ')';

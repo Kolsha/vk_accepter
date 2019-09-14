@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string post_add_text
  * @property string comment_text_mask
  * @property boolean post_flag_comment
+ * @property string title
  */
 class Group extends Model
 {
