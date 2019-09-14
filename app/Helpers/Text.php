@@ -176,10 +176,10 @@ function generate_keyboard($keys, $one_time = false)
 
 }
 
-function generate_dialog($title, $yes_payload, $no_payload = null)
+function generate_dialog($title, $yes_payload, $no_payload = null, $button_title = '?')
 {
     $buttons = [
-        [[null, '?', 'blue']],
+        [[null, $button_title, 'blue']],
 
         [
             [$yes_payload, 'Да', 'red'],

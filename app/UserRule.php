@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class UserRule extends Model
 {
 
+    protected $dateFormat = 'Y-m-d H:i:sO';
+
     /**
      * The attributes that aren't mass assignable.
      *

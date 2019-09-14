@@ -3,12 +3,15 @@
 namespace App\Jobs;
 
 use App\Post;
+use App\UserRule;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Group;
+
+// TODO: text in lang files
 
 class ProcessUserNewMsg implements ShouldQueue
 {
@@ -17,6 +20,7 @@ class ProcessUserNewMsg implements ShouldQueue
     protected $group;
     protected $msg;
     protected $vk;
+    protected $user_rules;
     /**
      * The number of times the job may be attempted.
      *
@@ -46,9 +50,10 @@ class ProcessUserNewMsg implements ShouldQueue
      */
     public function handle(\VK\Client\VKApiClient $vk)
     {
-        // TODO: check if is needed
         $this->vk = $vk;
-        $command = 'show_posts';
+
+
+        $command = '';
         if (!empty($this->msg) && !empty($this->msg['payload'])) {
             $this->msg['payload'] = json_decode($this->msg['payload'], true);
             $command = $this->msg['payload']['cmd'];
@@ -59,6 +64,29 @@ class ProcessUserNewMsg implements ShouldQueue
             'user_id' => $this->msg['from_id'],
             'access_token' => $this->group->vk_user_access_token
         ];
+
+
+        $this->user_rules = UserRule::getFirstMatchByUserId($this->group->vk_group_id, $this->msg['from_id']);
+        if (empty($this->user_rules)) {
+            $this->user_rules = UserRule::create([
+                'group_id' => $this->group->vk_group_id,
+                'user_id' => $this->msg['from_id']]);
+
+        }
+
+        if (empty($this->user_rules->chatbot_enabled)) {
+            if (!empty($command)) {
+                $this->user_rules->chatbot_enabled = true;
+                $command = 'show_posts';
+            } else {
+                return;
+            }
+        }
+
+        if (empty($command)) {
+            $command = 'show_posts';
+        }
+
 
         switch ($command) {
             case 'show_posts':
@@ -72,11 +100,17 @@ class ProcessUserNewMsg implements ShouldQueue
             case 'delete_post':
                 $answer = array_merge($answer, $this->delete_post());
                 break;
+
+            case 'disable_chatbot':
+                $answer = array_merge($answer, $this->disable_chatbot());
+                break;
             default:
                 throw new \Exception('invalid command: ' . $command);
         }
 
         SendMessageFromGroup::dispatch($answer);
+
+        $this->user_rules->save();
     }
 
     private function show_posts()
@@ -107,8 +141,11 @@ class ProcessUserNewMsg implements ShouldQueue
             ->simplePaginate($per_line * $free_line, ['*'], 'page', $page); // todo orderby time/id
 
         $my_posts_btn = [['cmd' => 'show_posts', 'page' => 1], 'Мои посты', 'green'];
+        $disable_chatbot_btn = [['cmd' => 'disable_chatbot'], 'Отключить бота', 'red'];
+
         $first_row = [
-            $my_posts_btn
+            $my_posts_btn,
+            $disable_chatbot_btn
         ];
 
         if (!$posts->onFirstPage()) {
@@ -193,7 +230,7 @@ class ProcessUserNewMsg implements ShouldQueue
             'page' => $this->msg['payload']['page'],
         ];
 
-        $dialog = generate_dialog('Вы действительно хотите удалить пост?', $yes_payload, $no_payload);
+        $dialog = generate_dialog('Вы действительно хотите удалить пост?', $yes_payload, $no_payload, 'Удалить пост?');
 
         $dialog['attachment'] = $post->attachment;
 
@@ -233,5 +270,25 @@ class ProcessUserNewMsg implements ShouldQueue
         $answer['message'] = 'Пост будет скоро удален!';
 
         return $answer;
+    }
+
+    private function disable_chatbot()
+    {
+        $this->user_rules->chatbot_enabled = false;
+
+        $my_posts_btn = [['cmd' => 'enable_chatbot'], 'Включить бота', 'green'];
+        $first_row = [
+            $my_posts_btn
+        ];
+        $buttons = [$first_row];
+
+        $keyboard = generate_keyboard($buttons);
+
+
+        return [
+
+            'message' => 'Бот отключен',
+            'keyboard' => $keyboard,
+        ];
     }
 }
