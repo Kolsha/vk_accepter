@@ -8,6 +8,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Arr;
+use VK\Exceptions\Api\VKApiWallAccessPostException;
+use VK\Exceptions\VKApiException;
+use VK\Exceptions\VKClientException;
 
 class DeletePost implements ShouldQueue
 {
@@ -28,7 +31,7 @@ class DeletePost implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 5;
+    public $tries = 2;
 
     /**
      * Create a new job instance.
@@ -45,16 +48,19 @@ class DeletePost implements ShouldQueue
      *
      * @param \VK\Client\VKApiClient $vk
      * @return void
-     * @throws \VK\Exceptions\Api\VKApiWallAccessPostException
      * @throws \VK\Exceptions\VKApiException
      * @throws \VK\Exceptions\VKClientException
      */
     public function handle(\VK\Client\VKApiClient $vk)
     {
 
-        $vk->wall()->delete(
-            $this->payload['access_token'],
-            Arr::except($this->payload, ['access_token'])
-        );
+        try {
+            $vk->wall()->delete(
+                $this->payload['access_token'],
+                Arr::except($this->payload, ['access_token'])
+            );
+        } catch (VKApiWallAccessPostException $e) {
+            // in most cases post already deleted
+        }
     }
 }

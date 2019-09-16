@@ -30,7 +30,7 @@ composer dump-autoload
 
 php artisan make:job ProcessPublishedPost
 
-
+php artisan make:job ScanPostToDelete
 
 php artisan make:job PostComment
 

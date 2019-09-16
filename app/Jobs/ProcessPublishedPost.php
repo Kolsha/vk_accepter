@@ -69,7 +69,16 @@ class ProcessPublishedPost implements ShouldQueue
 
         $access_token = $this->group->vk_user_access_token;
 
-        $user_rules = UserRule::getFirstMatchByUserId($this->group->vk_group_id, [$pobj->signer_id, $pobj->created_by]);
+        $possible_user_ids = [];
+
+        foreach (['created_by', 'signer_id'] as $property) {
+            // order is important
+            if (property_exists($pobj, $property)) {
+                $possible_user_ids[] = $pobj->{$property};
+            }
+        }
+
+        $user_rules = UserRule::getFirstMatchByUserId($this->group->vk_group_id, $possible_user_ids);
 
         if (!empty($user_rules) && empty($user_rules->process_published_posts)) {
             // stop handle
