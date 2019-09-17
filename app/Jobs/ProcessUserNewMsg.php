@@ -87,26 +87,36 @@ class ProcessUserNewMsg implements ShouldQueue
             $command = 'show_posts';
         }
 
-
+        $command_result = [
+            'message' => 'if u see this message then something wrong'
+        ];
         switch ($command) {
             case 'show_posts':
-                $answer = array_merge($answer, $this->show_posts());
+                $command_result = $this->show_posts();
                 break;
 
             case 'confirm_delete_post':
-                $answer = array_merge($answer, $this->confirm_delete_post());
+                $command_result = $this->confirm_delete_post();
                 break;
 
             case 'delete_post':
-                $answer = array_merge($answer, $this->delete_post());
+                $command_result = $this->delete_post();
                 break;
 
             case 'disable_chatbot':
-                $answer = array_merge($answer, $this->disable_chatbot());
+                $command_result = $this->disable_chatbot();
                 break;
+
+
+            case 'enable_chatbot':
+                $command_result = $this->enable_chatbot();
+                break;
+
             default:
                 throw new \Exception('invalid command: ' . $command);
         }
+
+        $answer = array_merge($answer, $command_result);
 
         SendMessageFromGroup::dispatch($answer);
 
@@ -290,5 +300,16 @@ class ProcessUserNewMsg implements ShouldQueue
             'message' => 'Бот отключен',
             'keyboard' => $keyboard,
         ];
+    }
+
+    private function enable_chatbot()
+    {
+        $this->user_rules->chatbot_enabled = false;
+
+        $answer = $this->show_posts();
+
+        $answer['message'] = 'Пост будет скоро удален!';
+
+        return $answer;
     }
 }
