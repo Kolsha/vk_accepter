@@ -71,7 +71,7 @@ class ProcessPublishedPost implements ShouldQueue
 
         $possible_user_ids = [];
 
-        foreach (['created_by', 'signer_id'] as $property) {
+        foreach (['signer_id', 'created_by'] as $property) {
             // order is important
             if (property_exists($pobj, $property)) {
                 $possible_user_ids[] = $pobj->{$property};
@@ -79,11 +79,6 @@ class ProcessPublishedPost implements ShouldQueue
         }
 
         $user_rules = UserRule::getFirstMatchByUserId($this->group->vk_group_id, $possible_user_ids);
-
-        if (!empty($user_rules) && empty($user_rules->process_published_posts)) {
-            // stop handle
-            return;
-        }
 
 
         $post_request = array(
@@ -98,6 +93,11 @@ class ProcessPublishedPost implements ShouldQueue
         if (isset($pobj->signer_id)) {
             $this->post->user_id = $pobj->signer_id;
             $post_request['signed'] = 1;
+        }
+
+        if (!empty($user_rules) && empty($user_rules->process_published_posts)) {
+            $this->post->save();
+            return;
         }
 
         $has_poll = false;
