@@ -308,7 +308,7 @@ class ProcessUserNewMsg implements ShouldQueue
 
         $answer = $this->show_posts();
 
-        $answer['message'] = 'Пост будет скоро удален!';
+        $answer['message'] = 'Бот включен!';
 
         return $answer;
     }
