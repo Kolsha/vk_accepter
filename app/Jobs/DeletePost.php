@@ -61,6 +61,11 @@ class DeletePost implements ShouldQueue
             );
         } catch (VKApiWallAccessPostException $e) {
             // in most cases post already deleted
+        } catch (VKApiException $e) {
+            if ($e->getCode() != 210) {
+                throw $e;
+            }
+            // in most cases post already deleted
         }
     }
 }
