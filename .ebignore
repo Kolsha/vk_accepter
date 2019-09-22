@@ -15,9 +15,8 @@ app/storage/
 # Laravel 5 & Lumen specific
 public/storage
 public/hot
-public/watermarks
 storage/*.key
-.env
+#.env
 Homestead.yaml
 Homestead.json
 /.vagrant
