@@ -209,13 +209,19 @@ class ProcessPublishedPost implements ShouldQueue
                     $img->insert($watermark, 'bottom-right', 5, 5);
                     $img->save();
 
-                    if (empty($v['text'])) {
-                        $v['text'] = $this->group->title;
+                    //photo text
+                    {
+                        if (empty($v['text'])) {
+                            $v['text'] = $this->group->title;
+                        }
+
+                        $mention_text = '@club' . $this->group->vk_group_id . '(';
+                        $mention_text_len = strlen($mention_text);
+
+
+                        $v['text'] = $mention_text . substr($v['text'], 0, 2048 - $mention_text_len - 1) . ')';
                     }
 
-                    if (empty($v['text'])) {
-                        $v['text'] = '@club' . $this->group->vk_group_id . '(' . $v['text'] . ')';
-                    }
 
                     $tmp_att = $this->uploadWallPhoto($vk, $this->group, $tmp_name, $v['text']);
                     if (!empty($tmp_att)) {
