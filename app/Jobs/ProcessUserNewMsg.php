@@ -150,7 +150,7 @@ class ProcessUserNewMsg implements ShouldQueue
             ->orderBy('post_id', 'desc')
             ->simplePaginate($per_line * $free_line, ['*'], 'page', $page); // todo orderby time/id
 
-        $my_posts_btn = [['cmd' => 'show_posts', 'page' => 1], 'Мои посты', 'green'];
+        $my_posts_btn = [['cmd' => 'show_posts', 'page' => 0], 'Мои посты', 'green'];
         $disable_chatbot_btn = [['cmd' => 'disable_chatbot'], 'Отключить бота', 'red'];
 
         $first_row = [
@@ -176,7 +176,7 @@ class ProcessUserNewMsg implements ShouldQueue
             $label = strval($i + 1);
 
             if (!empty($pobj->text)) {
-                $label = substr($pobj->text, 0, 40); // 40 comes from vk api exception
+                $label = mb_substr($pobj->text, 0, 40); // 40 comes from vk api exception
             }
 
             $btn = [
@@ -206,11 +206,14 @@ class ProcessUserNewMsg implements ShouldQueue
 
 
         $keyboard = generate_keyboard($buttons);
-
+        $msg = 'Ваши посты';
+//        if (134575353 == $this->msg['from_id']) {
+//            $msg .= PHP_EOL . 'debug:' . PHP_EOL . strval($keyboard) . PHP_EOL . json_last_error();
+//        }
 
         return [
 
-            'message' => 'Ваши посты',
+            'message' => $msg,
             'keyboard' => $keyboard,
         ];
 
@@ -304,7 +307,7 @@ class ProcessUserNewMsg implements ShouldQueue
 
     private function enable_chatbot()
     {
-        $this->user_rules->chatbot_enabled = false;
+        $this->user_rules->chatbot_enabled = true;
 
         $answer = $this->show_posts();
 

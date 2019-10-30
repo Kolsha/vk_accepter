@@ -33,6 +33,7 @@ class UserRule extends Model
      */
     public static function getFirstMatchByUserId(int $group_id, $users_id)
     {
+        // TODO: create default rule for users_id
         if (!is_array($users_id)) {
             $users_id = [$users_id];
         }

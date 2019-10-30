@@ -61,21 +61,20 @@ AND (now() AT TIME ZONE 'utc') > ((p.updated_at AT TIME ZONE 'utc') + g.delete_t
             ->whereRaw('groups.enabled = TRUE')
             ->whereRaw("posts.post_type = 'to_delete'")
             ->whereRaw("(now() AT TIME ZONE 'utc') > ((posts.updated_at AT TIME ZONE 'utc') + groups.delete_timeout_sec * interval '1 second')")
+            ->limit(50)
             ->get();
 
         foreach ($posts as $post) {
 
-            DeletePost::withChain([
-                new UpdatePostDBStatus($post, 'deleted')
+            DeletePost::dispatch(
+                [
+                    'owner_id' => '-' . $post->group->vk_group_id,
+                    'post_id' => $post->post_id,
+                    'access_token' => $post->group->vk_user_access_token
+                ]
+            );
 
-            ])
-                ->dispatch(
-                    [
-                        'owner_id' => '-' . $post->group->vk_group_id,
-                        'post_id' => $post->post_id,
-                        'access_token' => $post->group->vk_user_access_token
-                    ]
-                );
+            UpdatePostDBStatus::dispatchNow(Post::find($post->id), 'deleted');
         }
 
 

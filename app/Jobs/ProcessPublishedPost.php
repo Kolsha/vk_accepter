@@ -25,6 +25,7 @@ class ProcessPublishedPost implements ShouldQueue
 
     private const NEXT_TASK_DELAY_MIN = 10;
     private const NEXT_TASK_DELAY_MAX = 30;
+    private const MAX_NUMBER_OF_PROCESSED_PHOTOS = 3;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -186,12 +187,20 @@ class ProcessPublishedPost implements ShouldQueue
 
         { //photos block
             $http_client = new CurlHttpClient(5);
+            $count_photos_processed = 0;
 
             foreach ($photos as $k => $v) {
+
+                if ($count_photos_processed >= self::MAX_NUMBER_OF_PROCESSED_PHOTOS) {
+                    $post_request['attachments'][] = $v['att'];
+                    continue;
+                }
+                $count_photos_processed++;
 
                 $tmp_name = storage_path($k . '.jpg');
 
                 $tmp_data = $http_client->get($v['url'], [])->getBody();
+
                 if (empty($tmp_data)) {
                     $post_request['attachments'][] = $v['att'];
                     continue;

@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
-        $schedule->job(new ScanPostToDelete)->everyFifteenMinutes();
+        $schedule->job(new ScanPostToDelete)->daily();
     }
 
     /**

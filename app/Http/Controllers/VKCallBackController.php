@@ -36,7 +36,7 @@ class VKCallBackController extends Controller
 
 
         $group->vk_secret = preg_replace('/\s+/', '', $group->vk_secret);
-        if (!empty($group->vk_secret) &&
+        if (!empty($group->vk_secret) && // todo: bug here
             !empty($event->vk_secret) &&
             $group->vk_secret !== $event->secret) {
             throw new BadRequestHttpException('verification failed, secret mismatched');

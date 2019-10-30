@@ -147,6 +147,9 @@ function replace_button_color($color)
  */
 function generate_keyboard($keys, $one_time = false)
 {
+    $encode_option = JSON_UNESCAPED_LINE_TERMINATORS |
+        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE |
+        JSON_INVALID_UTF8_IGNORE;
     $buttons = [];
     $i = 0;
     foreach ($keys as $button_str) {
@@ -156,7 +159,7 @@ function generate_keyboard($keys, $one_time = false)
             $buttons[$i][$j]['action']['type'] = 'text';
 
             if (!empty($button[0])) {
-                $buttons[$i][$j]['action']['payload'] = json_encode($button[0], JSON_UNESCAPED_UNICODE);
+                $buttons[$i][$j]['action']['payload'] = json_encode($button[0], $encode_option);
             }
 
             $buttons[$i][$j]['action']['label'] = $button[1];
@@ -172,7 +175,7 @@ function generate_keyboard($keys, $one_time = false)
         'buttons' => $buttons
     ];
 
-    return json_encode($buttons, JSON_UNESCAPED_UNICODE);
+    return json_encode($buttons, $encode_option);
 
 }
 
