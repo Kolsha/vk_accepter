@@ -61,3 +61,5 @@ php artisan make:job UpdatePostStatus
 
 
 
+
+php artisan make:job ProcessAdminMsg

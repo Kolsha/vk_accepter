@@ -84,7 +84,7 @@ class VKCallBackController extends Controller
                 break;
 
             case 'message_new':
-                ProcessUserNewMsg::dispatch($group, $event->object);
+                ProcessUserNewMsg::dispatch($group, $event->object->message);
                 break;
 
             default:

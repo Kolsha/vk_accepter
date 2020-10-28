@@ -51,19 +51,35 @@ class ProcessUserNewMsg implements ShouldQueue
     public function handle(\VK\Client\VKApiClient $vk)
     {
         $this->vk = $vk;
+        $access_token = $this->group->vk_user_access_token;
 
+        $answer = [
+            'group_id' => $this->group->vk_group_id,
+            'user_id' => $this->msg['from_id'],
+            'access_token' => $access_token
+        ];
+
+        $is_manager_code = user_is_manager_code(
+            $this->msg['from_id'],
+            $this->group->vk_group_id
+        );
+
+        $is_manager_res = $vk->getRequest()->post('execute', $access_token,
+            [
+                'code' => $is_manager_code,
+                'v' => '5.21',
+            ]);
+
+        if ($is_manager_res['is_manager']) {
+            ProcessAdminMsg::dispatch($this->group, $this->msg);
+            return;
+        }
 
         $command = '';
         if (!empty($this->msg) && !empty($this->msg['payload'])) {
             $this->msg['payload'] = json_decode($this->msg['payload'], true);
             $command = $this->msg['payload']['cmd'];
         }
-
-        $answer = [
-            'group_id' => $this->group->vk_group_id,
-            'user_id' => $this->msg['from_id'],
-            'access_token' => $this->group->vk_user_access_token
-        ];
 
 
         $this->user_rules = UserRule::getFirstMatchByUserId($this->group->vk_group_id, $this->msg['from_id']);

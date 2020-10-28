@@ -92,6 +92,28 @@ CODE;
     );
 }
 
+function user_is_manager_code($user_id, $group_id)
+{
+    $code = <<<'CODE'
+var user_id = %d;
+var group_id = %d;
+
+var users = API.groups.getMembers({
+    "group_id": group_id,
+"filter": "managers"
+}).items@.id;
+
+return {"is_manager": (users.indexOf( user_id ) != -1)};
+
+CODE;
+
+    return sprintf(
+        $code,
+        $user_id,
+        $group_id
+    );
+}
+
 
 function get_photo_url($photo)
 {
@@ -143,9 +165,10 @@ function replace_button_color($color)
  * ]
  * row_btn = [ payload, title, color]
  * @param bool $one_time
+ * @param bool $inline
  * @return false|string
  */
-function generate_keyboard($keys, $one_time = false)
+function generate_keyboard($keys, $one_time = false, $inline = false)
 {
     $encode_option = JSON_UNESCAPED_LINE_TERMINATORS |
         JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE |
@@ -157,6 +180,9 @@ function generate_keyboard($keys, $one_time = false)
         foreach ($button_str as $button) {
 
             $buttons[$i][$j]['action']['type'] = 'text';
+            if (count($button) > 3) {
+                $buttons[$i][$j]['action']['type'] = $button[3];
+            }
 
             if (!empty($button[0])) {
                 $buttons[$i][$j]['action']['payload'] = json_encode($button[0], $encode_option);
@@ -172,7 +198,8 @@ function generate_keyboard($keys, $one_time = false)
     }
     $buttons = [
         'one_time' => $one_time,
-        'buttons' => $buttons
+        'buttons' => $buttons,
+        'inline' => $inline
     ];
 
     return json_encode($buttons, $encode_option);
