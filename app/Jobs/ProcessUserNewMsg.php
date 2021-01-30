@@ -59,6 +59,8 @@ class ProcessUserNewMsg implements ShouldQueue
             'access_token' => $access_token
         ];
 
+        $msg_text = $this->msg['text'];
+
         $is_manager_code = user_is_manager_code(
             $this->msg['from_id'],
             $this->group->vk_group_id
@@ -99,7 +101,7 @@ class ProcessUserNewMsg implements ShouldQueue
             }
         }
 
-        if (empty($command)) {
+        if (empty($command) && preg_match('/пост/iu', $msg_text)) {
             $command = 'show_posts';
         }
 
@@ -166,8 +168,9 @@ class ProcessUserNewMsg implements ShouldQueue
             ->orderBy('post_id', 'desc')
             ->simplePaginate($per_line * $free_line, ['*'], 'page', $page); // todo orderby time/id
 
+        $DISABLE_BOT_LABEL = 'Отключить бота';
         $my_posts_btn = [['cmd' => 'show_posts', 'page' => 0], 'Мои посты', 'green'];
-        $disable_chatbot_btn = [['cmd' => 'disable_chatbot'], 'Отключить бота', 'red'];
+        $disable_chatbot_btn = [['cmd' => 'disable_chatbot'], $DISABLE_BOT_LABEL, 'red'];
 
         $first_row = [
             $my_posts_btn,
@@ -222,10 +225,8 @@ class ProcessUserNewMsg implements ShouldQueue
 
 
         $keyboard = generate_keyboard($buttons);
-        $msg = 'Ваши посты';
-//        if (134575353 == $this->msg['from_id']) {
-//            $msg .= PHP_EOL . 'debug:' . PHP_EOL . strval($keyboard) . PHP_EOL . json_last_error();
-//        }
+        $msg = 'Ваши посты' . PHP_EOL .
+            'Нажмите "' . $DISABLE_BOT_LABEL . '", если такие сообщения мешают.';
 
         return [
 

@@ -116,6 +116,13 @@ class ProcessPublishedPost implements ShouldQueue
                 switch ($att->type) {
                     case 'link':
                         $url = $att->link->url;
+                        if (property_exists($att->link, 'product')) {
+                            $product = $att->link->product;
+                            if (property_exists($product, 'price')) {
+
+                                $post_request['message'] .= PHP_EOL . $product->price->text;
+                            }
+                        }
                         break;
                     default:
 
@@ -339,6 +346,17 @@ class ProcessPublishedPost implements ShouldQueue
                 'random_id' => $this->post->post_id
             ]);
         }
+
+        $share_post_code = share_post_code(
+            $this->group->vk_group_id,
+            $this->post->post_id
+        );
+
+        $vk->getRequest()->post('execute', $access_token,
+            [
+                'code' => $share_post_code,
+                'v' => '5.45',
+            ]);
 
 
     }

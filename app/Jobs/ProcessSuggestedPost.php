@@ -122,11 +122,14 @@ class ProcessSuggestedPost implements ShouldQueue
             'post_id' => $pobj->id,
 
         );
+        $is_youla_ad = false;
         if (isset($pobj->attachments)) {
             foreach ($pobj->attachments as $att) {
                 switch ($att->type) {
                     case 'link':
-                        $post_request['attachments'][] = $att->link->url;
+                        $url = $att->link->url;
+                        $post_request['attachments'][] = $url;
+                        $is_youla_ad = preg_match('/youla.ru/i', $url);
                         break;
                     default:
 
@@ -139,6 +142,11 @@ class ProcessSuggestedPost implements ShouldQueue
                         $post_request['attachments'][] = $att_string;
                 }
             }
+        }
+
+        if ($is_youla_ad && ((rand() % 50) != 37)) {
+            $this->markToDelete();
+            return;
         }
 
         $post_request['attachments'] = array_slice($post_request['attachments'], 0, 10);

@@ -85,6 +85,7 @@ class ProcessAdminMsg implements ShouldQueue
                 $this->deleteAndBan($post_id);
                 return;
             }
+            return;
         }
 
         $command_result = [
@@ -210,7 +211,7 @@ class ProcessAdminMsg implements ShouldQueue
             [
                 'owner_id' => '-' . $this->group->vk_group_id,
                 'post_id' => $post_id,
-                'access_token' => $this->group->vk_user_access_token
+                'access_token' => $access_token
             ]
         );
 
@@ -238,7 +239,7 @@ class ProcessAdminMsg implements ShouldQueue
             'group_id' => $this->group->vk_group_id,
             'user_id' => $this->msg['from_id'],
             'access_token' => $access_token,
-            'message' => "Пост({$post_id}) удален, пользователь({$user_id}) забанен.",
+            'message' => "Пост({$post_id}) удален, [id{$user_id}|пользователь] забанен.",
             'keyboard' => $keyboard,
 
         ];

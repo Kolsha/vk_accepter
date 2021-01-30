@@ -100,7 +100,7 @@ var group_id = %d;
 
 var users = API.groups.getMembers({
     "group_id": group_id,
-"filter": "managers"
+    "filter": "managers"
 }).items@.id;
 
 return {"is_manager": (users.indexOf( user_id ) != -1)};
@@ -111,6 +111,27 @@ CODE;
         $code,
         $user_id,
         $group_id
+    );
+}
+
+function share_post_code($group_id, $post_id)
+{
+    $code = <<<'CODE'
+var user_id = API.account.getProfileInfo().id;
+
+return API.messages.send({
+"user_id": user_id,
+"attachment": "wall-%d_%d",
+random_id: %d
+});
+
+CODE;
+
+    return sprintf(
+        $code,
+        $group_id,
+        $post_id,
+        $post_id
     );
 }
 
